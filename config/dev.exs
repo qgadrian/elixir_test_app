@@ -40,3 +40,7 @@ config :test_app, TestApp.Repo,
   database: "test_app_dev",
   hostname: "localhost",
   pool_size: 10
+
+# Guardian configuration
+config :guardian, Guardian,
+  secret_key: "W9cDv9fjPtsYv2gItOcFb5PzmRzqGkrOsJGmby0KpBOlHJIlhxMKFmIlcCG9PVFQ"

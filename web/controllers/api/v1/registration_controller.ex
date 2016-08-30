@@ -5,6 +5,7 @@ defmodule TestApp.UsersController do
   alias TestApp.{Repo, User}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: TestApp.SessionController
+
   plug :scrub_params, "user" when action in [:create, :update]
   plug :scrub_params, "id" when action in [:show, :delete]
 
@@ -65,7 +66,6 @@ defmodule TestApp.UsersController do
   def delete(conn, %{"id" => id}) do
     user = Guardian.Plug.current_resource(conn)
     Logger.debug "Current logged user is #{inspect(user)}"
-    id = -1
 
     case find_user_or_render_not_found(conn, id) do
       {:ok, user} ->

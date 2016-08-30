@@ -28,29 +28,7 @@ import_config "#{Mix.env}.exs"
 
 # Authentication token library config
 config :guardian, Guardian,
-  allowed_algos: ["ES512"],
   issuer: "TestApp",
   ttl: { 3, :days },
-  verify_issuer: true,
-  secret_key: %{
-                  "crv" => "P-521",
-                  "d" => "axDuTtGavPjnhlfnYAwkHa4qyfz2fdseppXEzmKpQyY0xd3bGpYLEF4ognDpRJm5IRaM31Id2NfEtDFw4iTbDSE",
-                  "kty" => "EC",
-                  "x" => "AL0H8OvP5NuboUoj8Pb3zpBcDyEJN907wMxrCy7H2062i3IRPF5NQ546jIJU3uQX5KN2QB_Cq6R_SUqyVZSNpIfC",
-                  "y" => "ALdxLuo6oKLoQ-xLSkShv_TA0di97I9V92sg1MKFava5hKGST1EKiVQnZMrN3HO8LtLT78SNTgwJSQHAXIUaA-lV"
-                },
+  verify_issuer: false,
   serializer: TestApp.GuardianSerializer
-
-# %% Coherence Configuration %%   Don't remove this line
-config :coherence,
-  user_schema: TestApp.User,
-  repo: TestApp.Repo,
-  module: TestApp,
-  logged_out_url: "/",
-  email_from: {"Your Name", "yourname@example.com"},
-  opts: [:authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token, :invitable, :registerable]
-
-config :coherence, TestApp.Coherence.Mailer,
-  adapter: Swoosh.Adapters.Sendgrid,
-  api_key: "your api key here"
-# %% End Coherence Configuration %%

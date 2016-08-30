@@ -12,6 +12,14 @@ defmodule TestApp.SessionView do
       user
   end
 
+  def render("show.json", %{jwt: jwt, user: user, exp: exp}) do
+    %{
+      jwt: jwt,
+      user: user,
+      exp: exp
+    }
+  end
+
   def render("error.json", _) do
     %{error: "Invalid email or password"}
   end
