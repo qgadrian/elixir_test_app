@@ -40,3 +40,16 @@ config :guardian, Guardian,
                   "y" => "ALdxLuo6oKLoQ-xLSkShv_TA0di97I9V92sg1MKFava5hKGST1EKiVQnZMrN3HO8LtLT78SNTgwJSQHAXIUaA-lV"
                 },
   serializer: TestApp.GuardianSerializer
+# %% Coherence Configuration %%   Don't remove this line
+config :coherence,
+  user_schema: TestApp.User,
+  repo: TestApp.Repo,
+  module: TestApp,
+  logged_out_url: "/",
+  email_from: {"Your Name", "yourname@example.com"},
+  opts: [:authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token, :invitable, :registerable]
+
+config :coherence, TestApp.Coherence.Mailer,
+  adapter: Swoosh.Adapters.Sendgrid,
+  api_key: "your api key here"
+# %% End Coherence Configuration %%
