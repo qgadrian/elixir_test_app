@@ -40,6 +40,7 @@ config :guardian, Guardian,
                   "y" => "ALdxLuo6oKLoQ-xLSkShv_TA0di97I9V92sg1MKFava5hKGST1EKiVQnZMrN3HO8LtLT78SNTgwJSQHAXIUaA-lV"
                 },
   serializer: TestApp.GuardianSerializer
+
 # %% Coherence Configuration %%   Don't remove this line
 config :coherence,
   user_schema: TestApp.User,

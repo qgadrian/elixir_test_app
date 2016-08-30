@@ -1,10 +1,10 @@
 defmodule TestApp.UsersController do
   use TestApp.Web, :controller
   require Logger
-
   alias TestApp.{Repo, User}
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: TestApp.SessionController
+#  plug Coherence.Authentication.Session, protected: true when action != :create
+
   plug :scrub_params, "user" when action in [:create, :update]
   plug :scrub_params, "id" when action in [:show, :delete]
 

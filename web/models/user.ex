@@ -1,5 +1,6 @@
 defmodule TestApp.User do
   use TestApp.Web, :model
+  use Coherence.Schema
   require Logger
 
   alias TestApp.{Repo, User}
@@ -10,7 +11,7 @@ defmodule TestApp.User do
     field :last_name, :string
     field :email, :string
     field :encrypted_password, :string
-    field :password, :string, virtual: true
+    coherence_schema
 
     timestamps()
   end
@@ -22,14 +23,15 @@ defmodule TestApp.User do
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(struct, params \\ :empty) do
+  def changeset(model, params \\ :empty) do
     Logger.debug "User creation with params #{inspect(params)}"
-    struct
+    model
     |> cast(params, @required_fields, @optional_fields)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 5)
     |> validate_confirmation(:password, message: "Password does not match")
     |> unique_constraint(:email, message: "Email already taken")
+    |> validate_coherence(params)
     |> generate_encrypted_password
   end
 
