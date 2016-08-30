@@ -19,7 +19,7 @@ defmodule TestApp.Mixfile do
   def application do
     [mod: {TestApp, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :comeonin]]
+                    :phoenix_ecto, :postgrex, :comeonin, :coherence]]
   end
 
   # Specifies which paths to compile per environment.
@@ -40,6 +40,7 @@ defmodule TestApp.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.5"},
+     {:coherence, "~> 0.3"},
      {:guardian, "~> 0.12.0"}
     ]
   end
