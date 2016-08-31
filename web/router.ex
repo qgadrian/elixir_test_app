@@ -12,7 +12,7 @@ defmodule TestApp.Router do
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
-    plug Guardian.Plug.VerifyHeader # Looks for token in authorization header
+    plug Guardian.Plug.VerifyHeader, realm: "TestApp" # Looks for 'TestApp <jwt>' token in authorization header
     plug Guardian.Plug.LoadResource # Makes the current resource available Guardian.Plug.current_resource(conn)
   end
 

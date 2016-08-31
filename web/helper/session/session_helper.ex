@@ -5,14 +5,14 @@ defmodule TestApp.Session do
   def authenticate(%{"email" => email, "password" => password}) do
     user = Repo.get_by(User, email: String.downcase(email))
 
-    Logger.debug "Authenticating user #{user.email}"
+    Logger.debug "Authenticating user #{email}"
 
     case check_password(user, password) do
       true ->
         Logger.debug "Login successful for user #{user.email}"
         {:ok, user}
       _ ->
-        Logger.debug "Login failed for user #{user.email}"
+        Logger.debug "Login failed for user #{email}"
         :error
     end
   end

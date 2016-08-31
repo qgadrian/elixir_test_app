@@ -9,18 +9,16 @@ defmodule TestApp.SessionController do
   def create(conn, %{"session" => session_params}) do
     case TestApp.Session.authenticate(session_params) do
       {:ok, user} ->
-#        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+
+          conn
+          |> put_status(:created)
+          |> Guardian.Plug.sign_in(user)
+          |> render(TestApp.SessionView, "show.json", jwt: jwt, user: user)
 
 #        conn = conn |> fetch_session |> put_session(:request_token, user)
-        Guardian.Plug.sign_in(conn, user)
-        text conn, ""
-
-#        conn
-#        |> put_status(:created)
-#        |> fetch_session
-#        |> Guardian.Plug.sign_in(user)
-#        |> render(TestApp.SessionView, "show.json", user: user)
-#        |> render("show.json", jwt: jwt, user: user)
+#        Guardian.Plug.sign_in(conn, user)
+#        text conn, ""
 
 #        new_conn = Guardian.Plug.api_sign_in(conn, user)
 #        Logger.debug "Conn #{inspect(new_conn)}"
