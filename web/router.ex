@@ -33,7 +33,8 @@ defmodule TestApp.Router do
     scope "/v1" do
       resources "/user", UsersController, only: [:create, :show, :delete, :update]
 
-      resources "/sessions", SessionController, only: [:create, :delete]
+      resources "/sessions", SessionController, only: [:create]
+      delete "/sessions", SessionController, :delete
     end
   end
 

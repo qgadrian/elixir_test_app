@@ -2,7 +2,7 @@ defmodule TestApp.UsersController do
   use TestApp.Web, :controller
   require Logger
 
-  alias TestApp.{Repo, User}
+  alias TestApp.{Repo, User, Session}
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: TestApp.SessionController] when action in [:update, :delete, :show]
 
@@ -50,16 +50,19 @@ defmodule TestApp.UsersController do
       end
 
   def show(conn, %{"id" => id}) do
-    current_user = Guardian.Plug.current_resource(conn)
-    Logger.debug "Current user is #{inspect(current_user)}"
-
-    case find_user_or_render_not_found(conn, id) do
+    case Session.check_user_action_permission(conn, id) do
       {:ok, user} ->
-        Logger.debug "user email is #{user.email} and id is #{user.id}"
-        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
-            conn
-            |> put_status(:ok)
-            |> render(TestApp.SessionView, "show.json", user: user)
+        conn
+        |> put_status(:ok)
+        |> render(TestApp.SessionView, "show.json", user: user)
+      {:error, message: _} ->
+        conn
+        |> put_status(:forbidden)
+        |> render(TestApp.SessionView, "not_found.json", id: id)
+      {:error, not_found: _} ->
+        conn
+        |> put_status(:not_found)
+        |> render(TestApp.SessionView, "not_found.json", id: id)
     end
   end
 
