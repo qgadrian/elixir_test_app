@@ -20,8 +20,8 @@ defmodule TestApp.SessionView do
     }
   end
 
-  def render("error.json", _) do
-    %{error: "Invalid email or password"}
+  def render("error.json", %{errors: errors}) do
+    %{errors: errors}
   end
 
   def render("delete.json", _) do

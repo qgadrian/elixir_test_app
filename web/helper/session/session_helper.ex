@@ -1,13 +1,17 @@
 defmodule TestApp.Session do
-  use TestApp.Web
-  alias TestApp.{Repo, User}
   require Logger
 
-  def check_user_action_permission(current_user, id) do
-    if current_user.id == String.to_integer(id) do
-      {:ok, current_user}
-    else
-      {:error, :unauthorized}
+  alias TestApp.{Repo, User}
+
+  def check_user_action_permission(current_user, user_id) do
+    case current_user do
+      nil -> {:error, :unauthorized}
+      _ ->
+        if current_user.id == String.to_integer(user_id) do
+          {:ok, current_user}
+        else
+          {:error, :unauthorized}
+        end
     end
   end
 
@@ -26,12 +30,19 @@ defmodule TestApp.Session do
     end
   end
 
-        def handle_unauthorized_request(conn) do
-          Logger.debug "Unauthorized request"
-          conn
-          |> put_status(:forbidden)
-          |> render(TestApp.SessionView, "forbidden.json", error: "Forbidden")
-        end
+  def handle_unauthorized_request(conn) do
+    Logger.debug "Unauthorized request"
+    conn
+    |> Plug.Conn.put_status(:forbidden)
+    |> Phoenix.Controller.render(TestApp.SessionView, "forbidden.json", error: "Forbidden")
+  end
+
+  def handle_unexpected_error(conn, error_message) do
+    Logger.error ("Unexpected error: #{error_message}")
+    conn
+    |> Plug.Conn.put_status(:internal_server_error)
+    |> Phoenix.Controller.render(TestApp.SessionView, "error.json", error: "Error procesing request")
+  end
 
   defp check_password(user, password) do
     case user do

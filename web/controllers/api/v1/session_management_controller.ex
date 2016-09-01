@@ -1,5 +1,6 @@
 defmodule TestApp.SessionController do
   use TestApp.Web, :controller
+
   require Logger
 
    plug Guardian.Plug.EnsureAuthenticated, [handler: TestApp.SessionController] when action in [:delete]

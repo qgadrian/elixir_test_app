@@ -19,17 +19,27 @@ defmodule TestApp.User do
   @required_fields ~w(first_name last_name email password)
   @optional_fields ~w(encrypted_password)
 
+  @required_update_fields ~w()
+  @optional_update_fields ~w(first_name last_name email password encrypted_password)
+
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(struct, params \\ :empty) do
-    Logger.debug "User creation with params #{inspect(params)}"
+  def create_changeset(struct, params \\ :empty) do
+    changeset(struct, params, @required_fields, @optional_fields)
+  end
+
+  def update_changeset(struct, params \\ :empty) do
+    changeset(struct, params, @required_update_fields, @optional_update_fields)
+  end
+
+  defp changeset(struct, params \\ :empty, required_field, optional_fiels) do
     struct
-    |> cast(params, @required_fields, @optional_fields)
-    |> validate_format(:email, ~r/@/)
+    |> cast(params, required_field, optional_fiels)
+    |> validate_format(:email, ~r/@/, message: "invalid format")
     |> validate_length(:password, min: 5)
-    |> validate_confirmation(:password, message: "Password does not match")
-    |> unique_constraint(:email, message: "Email already taken")
+    |> validate_confirmation(:password, message: "password does not match")
+    |> unique_constraint(:email, message: "email already taken")
     |> generate_encrypted_password
   end
 
@@ -39,25 +49,25 @@ defmodule TestApp.User do
         Logger.debug "Generating encrypted password..."
         put_change(current_changeset, :encrypted_password, Comeonin.Bcrypt.hashpwsalt(password))
       _ ->
-        Logger.debug "Not valid user data #{inspect(current_changeset)}"
         current_changeset
     end
   end
 
   # Query methods
-  def find_user_by_id(id) do
-   case Repo.get(User, id) do
-     nil -> {:error, id}
+  def find_user_by_email(email) do
+   case Repo.get(User, email) do
+     nil -> {:error, email}
      user -> {:ok, user}
    end
   end
 
    # Json serialization
-   defimpl Poison.Encoder, for: TestApp.User do
-     def encode(model, opts) do
-       model
-         |> Map.take([:id, :first_name, :last_name, :email])
-         |> Poison.Encoder.encode(opts)
-     end
-   end
+  defimpl Poison.Encoder, for: TestApp.User do
+    def encode(model, opts) do
+      model
+      |> Map.take([:id, :first_name, :last_name, :email])
+      |> Poison.Encoder.encode(opts)
+    end
+  end
+
 end
