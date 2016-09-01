@@ -1,5 +1,7 @@
 defmodule TestApp.UsersController do
   use TestApp.Web, :controller
+  use Guardian.Phoenix.Controller
+
   require Logger
 
   alias TestApp.{Repo, User, Session}
@@ -27,11 +29,9 @@ defmodule TestApp.UsersController do
     end
   end
 
-      def update(conn, %{"user" => user_params}) do
+      def update(conn, %{"user" => user_params}, current_user, claims) do
         id = conn.params["id"]
-        Logger.debug "id #{id}"
-        Logger.debug "user #{inspect(user_params)}"
-        case find_user_or_render_not_found(conn, id) do
+        case Session.check_user_action_permission(current_user, id) do
               {:ok, user} ->
                 Logger.debug "Updating user #{inspect(user)}..."
 
@@ -46,59 +46,38 @@ defmodule TestApp.UsersController do
                   {:error, changeset} ->
                     Logger.debug "Error updating #{inspect(changeset)}"
                 end
+              {:error, :unauthorized} ->
+                Session.handle_unauthorized_request(conn)
             end
       end
 
-  def show(conn, %{"id" => id}) do
-    case Session.check_user_action_permission(conn, id) do
+  def show(conn, %{"id" => id}, current_user, claims) do
+    case Session.check_user_action_permission(current_user, id) do
       {:ok, user} ->
         conn
         |> put_status(:ok)
         |> render(TestApp.SessionView, "show.json", user: user)
-      {:error, message: _} ->
-        conn
-        |> put_status(:forbidden)
-        |> render(TestApp.SessionView, "not_found.json", id: id)
-      {:error, not_found: _} ->
-        conn
-        |> put_status(:not_found)
-        |> render(TestApp.SessionView, "not_found.json", id: id)
+      {:error, :unauthorized} ->
+        Session.handle_unauthorized_request(conn)
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    Logger.debug "Delete request}"
-    user = Guardian.Plug.current_resource(conn)
-    Logger.debug "Current logged user is #{inspect(user)}"
-
-    case find_user_or_render_not_found(conn, id) do
+  def delete(conn, %{"id" => id}, current_user, claims) do
+    case Session.check_user_action_permission(current_user, id) do
       {:ok, user} ->
-        Logger.debug "Deleting user #{inspect(user)}..."
+        Logger.debug "Deleting user #{id}..."
         case Repo.delete(user) do
           {:ok, user} ->
-            Logger.debug "Deleted user #{inspect(user)}"
+            Logger.debug "Deleted user #{id}"
             conn
             |> put_status(:ok)
             |> render(TestApp.SessionView, "delete.json")
           {:error, changeset} ->
-            Logger.debug "Error deleting #{inspect(changeset)}"
+            Logger.debug "Error deleting #{id}"
         end
+      {:error, :unauthorized} ->
+        Session.handle_unauthorized_request(conn)
     end
   end
 
-    defp find_user_or_render_not_found(conn, id) do
-      case User.find_user_by_id(id) do
-        {:ok, user} ->
-          {:ok, user}
-        {:error, id} ->
-          handle_user_not_found(conn, id)
-      end
-    end
-
-  defp handle_user_not_found(conn, id) do
-    Logger.debug "User id not found #{id}"
-    conn
-    |> put_status(:not_found)
-    |> render(TestApp.SessionView, "not_found.json", id: id)
-  end
 end

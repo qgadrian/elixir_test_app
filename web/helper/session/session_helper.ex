@@ -1,21 +1,13 @@
 defmodule TestApp.Session do
+  use TestApp.Web
   alias TestApp.{Repo, User}
   require Logger
 
-  def check_user_action_permission(conn, id) do
-    current_user = Guardian.Plug.current_resource(conn)
-
-    case User.find_user_by_id(id) do
-      {:ok, user} ->
-      if user.id == current_user.id do
-        {:ok, user}
-      else
-        {:error, message: "Invalid token"}
-      end
-      {:error, id} ->
-          Logger.debug "User id not found #{id}"
-          {:error, not_found: id}
-#        raise ArgumentError, message: "User not found"
+  def check_user_action_permission(current_user, id) do
+    if current_user.id == String.to_integer(id) do
+      {:ok, current_user}
+    else
+      {:error, :unauthorized}
     end
   end
 
@@ -34,10 +26,18 @@ defmodule TestApp.Session do
     end
   end
 
+        def handle_unauthorized_request(conn) do
+          Logger.debug "Unauthorized request"
+          conn
+          |> put_status(:forbidden)
+          |> render(TestApp.SessionView, "forbidden.json", error: "Forbidden")
+        end
+
   defp check_password(user, password) do
     case user do
       nil -> Comeonin.Bcrypt.dummy_checkpw()
       _ -> Comeonin.Bcrypt.checkpw(password, user.encrypted_password)
     end
   end
+
 end

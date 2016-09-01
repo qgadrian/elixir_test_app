@@ -14,7 +14,6 @@ defmodule TestApp.SessionController do
         {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
           conn
           |> put_status(:created)
-          |> Guardian.Plug.sign_in(user)
           |> render(TestApp.SessionView, "show.json", jwt: jwt, user: user)
       :error ->
         conn
@@ -25,7 +24,7 @@ defmodule TestApp.SessionController do
 
   def delete(conn, _) do
     conn
-    |> Guardian.Plug.sign_out
+    |> Guardian.Plug.sign_out(conn)
     |> render(TestApp.SessionView, "delete.json")
   end
 

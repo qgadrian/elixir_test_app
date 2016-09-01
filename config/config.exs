@@ -28,7 +28,12 @@ import_config "#{Mix.env}.exs"
 
 # Authentication token library config
 config :guardian, Guardian,
+  hooks: GuardianDb,
   issuer: "TestApp",
   ttl: { 3, :days },
   verify_issuer: false,
   serializer: TestApp.GuardianSerializer
+
+config :guardian_db, GuardianDb,
+  repo: TestApp.Repo,
+  schema_name: "tokens"
