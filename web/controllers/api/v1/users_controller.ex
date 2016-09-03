@@ -42,7 +42,7 @@ defmodule TestApp.UsersController do
         |> put_status(:ok)
         |> render(TestApp.SessionView, "show.json", user: user)
       {:error, changeset} ->
-        Session.handle_unexpected_error(conn, "Error updating #{inspect(changeset)}")
+        SessionHandler.handle_unexpected_error(conn, "Error updating #{inspect(changeset)}")
     end
   end
 

@@ -9,15 +9,11 @@ defmodule TestApp.SessionView do
   end
 
   def render("show.json", %{user: user}) do
-      user
+      %{user: user}
   end
 
-  def render("show.json", %{jwt: jwt, user: user, exp: exp}) do
-    %{
-      jwt: jwt,
-      user: user,
-      exp: exp
-    }
+  def render("show.json", %{jwt: jwt}) do
+    %{jwt: jwt}
   end
 
   def render("error.json", %{errors: errors}) do
