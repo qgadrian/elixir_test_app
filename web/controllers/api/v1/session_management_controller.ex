@@ -36,4 +36,5 @@ defmodule TestApp.SessionController do
     |> put_status(:forbidden)
     |> render(TestApp.SessionView, "forbidden.json", error: "Not Authenticated")
   end
+
 end

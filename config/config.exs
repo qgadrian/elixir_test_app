@@ -32,8 +32,14 @@ config :guardian, Guardian,
   issuer: "TestApp",
   ttl: { 3, :days },
   verify_issuer: false,
-  serializer: TestApp.GuardianSerializer
+  serializer: TestApp.GuardianSerializer,
+  permissions: %{
+    default: [:read, :write],
+    admin: [:dashboard, :user_block]
+  }
 
 config :guardian_db, GuardianDb,
   repo: TestApp.Repo,
   schema_name: "tokens"
+
+config :canary, repo: TestApp.Repo

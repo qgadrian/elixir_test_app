@@ -41,7 +41,8 @@ defmodule TestApp.Mixfile do
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.5"},
      {:guardian, "~> 0.12.0"},
-     {:guardian_db, "~> 0.7.0"}
+     {:guardian_db, "~> 0.7.0"},
+     {:canary, "~> 0.14.2"}
     ]
   end
 

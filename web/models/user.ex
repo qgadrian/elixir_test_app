@@ -11,6 +11,7 @@ defmodule TestApp.User do
     field :email, :string
     field :encrypted_password, :string
     field :password, :string, virtual: true
+#    field :role, :string
 
     timestamps()
   end
