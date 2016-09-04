@@ -11,17 +11,17 @@ defmodule TestApp.User do
     field :email, :string
     field :encrypted_password, :string
     field :password, :string, virtual: true
-#    field :role, :string
+    belongs_to :role, TestApp.Role
 
     timestamps()
   end
 
   # Model constraints
-  @required_fields ~w(first_name last_name email password)
+  @required_fields ~w(first_name last_name email password role)
   @optional_fields ~w(encrypted_password)
 
   @required_update_fields ~w()
-  @optional_update_fields ~w(first_name last_name email password encrypted_password)
+  @optional_update_fields ~w(first_name last_name email password encrypted_password role)
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

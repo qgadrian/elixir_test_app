@@ -6,7 +6,7 @@ defmodule TestApp.SessionController do
 
   import Canary.Plugs
 
-  alias TestApp.{Session, SeasonView}
+  alias TestApp.{Session, SeasonView, SessionHandler}
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: TestApp.SessionController] when action in [:delete]
   plug TestApp.Plug.CanaryUser
@@ -19,7 +19,7 @@ defmodule TestApp.SessionController do
   def create(conn, %{"session" => session_params}, current_user, claims) do
     case Session.authenticate(session_params) do
       {:ok, user} ->
-        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token, perms: %{user: [:read, :write]})
           conn
           |> put_status(:created)
           |> render(TestApp.SessionView, "show.json", jwt: jwt)

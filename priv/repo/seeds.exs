@@ -9,3 +9,6 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+TestApp.Repo.insert!(%TestApp.Role{name: "admin"})
+TestApp.Repo.insert!(%TestApp.Role{name: "user"})

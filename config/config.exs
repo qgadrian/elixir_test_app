@@ -34,7 +34,7 @@ config :guardian, Guardian,
   verify_issuer: false,
   serializer: TestApp.GuardianSerializer,
   permissions: %{
-    default: [:read, :write],
+    user: [:read, :write],
     admin: [:dashboard, :user_block]
   }
 

@@ -3,12 +3,14 @@ defmodule TestApp.UsersController do
   use Guardian.Phoenix.Controller
 
   require Logger
+  require IEx
 
   import Canary.Plugs
 
   alias TestApp.{Repo, User, SessionHandler}
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: TestApp.SessionController] when action in [:update, :delete, :show]
+  plug Guardian.Plug.EnsurePermissions, [handler: TestApp.SessionHandler, one_of: [%{user: [:read]}, %{admin: []}]] when action in [:show]
   plug TestApp.Plug.CanaryUser
   plug :authorize_resource, model: TestApp.User, only: [:update, :delete, :show], unauthorized_handler: {TestApp.SessionHandler, :handle_unauthorized}
 
@@ -46,10 +48,18 @@ defmodule TestApp.UsersController do
     end
   end
 
-  def show(conn, %{"id" => id}, current_user, claims) do
-    conn
-    |> put_status(:ok)
-    |> render(TestApp.SessionView, "show.json", user: current_user)
+  def show(conn, %{"id" => id}, current_user, {:ok, claims}) do
+    request_resource = conn.assigns[:request_resource]
+    case request_resource do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(TestApp.SessionView, "not_found.json", id: id)
+      _ ->
+        conn
+        |> put_status(:ok)
+        |> render(TestApp.SessionView, "show.json", user: conn.assigns[:request_resource])
+    end
   end
 
   def delete(conn, %{"id" => id}, current_user, claims) do

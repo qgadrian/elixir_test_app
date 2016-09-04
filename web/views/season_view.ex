@@ -29,6 +29,6 @@ defmodule TestApp.SessionView do
   end
 
   def render("not_found.json", %{id: id}) do
-    %{error: "Not found #{id}"}
+    %{not_found: "#{id}"}
   end
 end

@@ -8,6 +8,10 @@ defmodule TestApp.SessionHandler do
     |> Phoenix.Controller.render(TestApp.SessionView, "error.json", error: "Error procesing request")
   end
 
+  def unauthorized(conn, _) do
+    handle_unauthorized(conn)
+  end
+
   def handle_unauthorized(conn) do
     Logger.debug "Unauthorized request"
     conn
