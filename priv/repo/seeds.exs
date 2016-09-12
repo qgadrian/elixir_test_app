@@ -1,14 +1,38 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     TestApp.Repo.insert!(%TestApp.SomeModel{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+# Clear DB
+# Mix.Task.run("mix ecto.drop && mix ecto.create && mix ecto.migrate")
 
-TestApp.Repo.insert!(%TestApp.Role{name: "admin"})
-TestApp.Repo.insert!(%TestApp.Role{name: "user"})
+alias TestApp.{User, Role, Repo}
+
+# Roles
+role_admin = TestApp.Repo.insert!(%TestApp.Role{name: "admin"})
+role_user = TestApp.Repo.insert!(%TestApp.Role{name: "user"})
+
+# Users
+
+config = %{
+  users: 23
+}
+
+for index <- 1..config[:users] do
+  # %TestApp.User{}
+  # |> TestApp.User.create_changeset(%{
+  #       first_name: "FirstName#{index}",
+  #       last_name: "LastName#{index}",
+  #       email: "#{index}@email.com",
+  #       password: "verylongpassword",
+  #       password_confirmation: "verylongpassword"
+  #     })
+  # |> Ecto.build_assoc(:role, role_user)
+  # |> Repo.insert!
+
+  role_user
+  |> Ecto.build_assoc(:users)
+  |> User.create_changeset(%{
+        first_name: "FirstName#{index}",
+        last_name: "LastName#{index}",
+        email: "#{index}@email.com",
+        password: "verylongpassword",
+        password_confirmation: "verylongpassword"
+      })
+  |> Repo.insert!
+end

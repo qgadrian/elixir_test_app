@@ -42,7 +42,8 @@ defmodule TestApp.Mixfile do
      {:comeonin, "~> 2.5"},
      {:guardian, "~> 0.12.0"},
      {:guardian_db, "~> 0.7.0"},
-     {:canary, "~> 0.14.2", path: "deps/canary"}
+     {:canary, "~> 1.0.0"},
+     {:faker, "~> 0.5", only: [:test, :dev]}
     ]
   end
 

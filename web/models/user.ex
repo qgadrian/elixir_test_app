@@ -1,8 +1,9 @@
 defmodule TestApp.User do
   use TestApp.Web, :model
+
   require Logger
 
-  alias TestApp.{Repo, User}
+  alias TestApp.{Repo, User, Role}
 
   # Schema definition
   schema "user" do
@@ -11,23 +12,26 @@ defmodule TestApp.User do
     field :email, :string
     field :encrypted_password, :string
     field :password, :string, virtual: true
-    belongs_to :role, TestApp.Role
+
+    belongs_to :role, TestApp.Role # embbed stuff cannot be use in requred/optional fields
 
     timestamps()
   end
 
   # Model constraints
-  @required_fields ~w(first_name last_name email password role)
-  @optional_fields ~w(encrypted_password)
+  @required_fields ~w(first_name last_name email password role_id)
+  @optional_fields ~w()
 
-  @required_update_fields ~w()
-  @optional_update_fields ~w(first_name last_name email password encrypted_password role)
+  @required_update_fields ~w(password) # Password always will be a required field to prevent token stolen user updatings
+  @optional_update_fields ~w(first_name last_name email)
 
-  @doc """
-  Builds a changeset based on the `struct` and `params`.
-  """
+
   def create_changeset(struct, params \\ :empty) do
-    changeset(struct, params, @required_fields, @optional_fields)
+    role_id = Role.find_by_name("user").id
+    user_params = Map.put_new(params, "role_id", role_id)
+
+    changeset(struct, user_params, @required_fields, @optional_fields)
+    |> cast_assoc(:role)
   end
 
   def update_changeset(struct, params \\ :empty) do
@@ -55,11 +59,10 @@ defmodule TestApp.User do
   end
 
   # Query methods
-  def find_user_by_email(email) do
-   case Repo.get(User, email) do
-     nil -> {:error, email}
-     user -> {:ok, user}
-   end
+  def find_by_email(email) do
+    Repo.one! from u in User,
+     where: u.email == ^email,
+     select: u
   end
 
    # Json serialization

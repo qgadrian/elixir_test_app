@@ -8,5 +8,7 @@ defmodule TestApp.Repo.Migrations.CreateRole do
       timestamps()
     end
 
+    create unique_index(:role, [:name])
+
   end
 end

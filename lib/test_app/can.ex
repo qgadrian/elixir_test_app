@@ -7,8 +7,7 @@ defimpl Canada.Can, for: TestApp.User do
 
   def can?(session_user, action, request_user) when action in [:update, :show, :delete] do
     session_user = TestApp.Repo.preload session_user, :role
-    Logger.debug "session_user #{inspect(session_user)}"
-    Logger.debug "request_user #{inspect(request_user)}"
+
     case request_user do
       nil -> true
       request_user ->
